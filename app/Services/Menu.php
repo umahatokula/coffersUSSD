@@ -165,10 +165,11 @@ class Menu{
 
         } else if ($level == 2) {
 
+            $amount = $textArray[1];
             $customer = Customer::where('phone_number', $this->phoneNumber)->first();
             $eligibleAmount = $this->eligibleAmount($customer);
 
-            if ($textArray[1] > $eligibleAmount) {
+            if ($this->confirmBnplAmount($amount, $eligibleAmount)) {
 
                 echo "END Amount exceeds: ".number_format($eligibleAmount);
 
@@ -197,22 +198,34 @@ class Menu{
             $pin = $textArray[2];
             $customer = Customer::where('phone_number', $this->phoneNumber)->first();
 
+
+            // check pin
             if ($pin != $customer->pin) {
 
                 echo "END Incorrect PIN";
 
             } else {
 
-                //connect to DB
-                $transaction = Transaction::create([
-                    'customer_id' => $customer->id,
-                    'amount' => $amount,
-                ]);
+                // confirm amount entered
+                $eligibleAmount = $this->eligibleAmount($customer);
+                if ($this->confirmBnplAmount($amount, $eligibleAmount)) {
 
-                // fire event
-                event(new PowerWasPurchased($transaction));
+                    echo "END Amount exceeds: ".number_format($eligibleAmount);
 
-                echo "END We are processing your request. You will receive an SMS shortly";
+                } else {
+
+                    //connect to DB
+                    $transaction = Transaction::create([
+                        'customer_id' => $customer->id,
+                        'amount' => $amount,
+                    ]);
+
+                    // fire event
+                    event(new PowerWasPurchased($transaction));
+
+                    echo "END We are processing your request. You will receive an SMS shortly";
+                }
+
             }
 
         } else if ($level == 5 && $textArray[3] == 2) {
@@ -270,5 +283,9 @@ class Menu{
 
     private function eligibleAmount(Customer $customer) {
         return 2000;
+    }
+
+    private function confirmBnplAmount($amountEntered, $eligibleAmount) {
+        return intval($amountEntered) > intval($eligibleAmount) ? true : false;
     }
 }
