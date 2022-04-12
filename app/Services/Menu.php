@@ -84,26 +84,34 @@ class Menu{
         $response = "";
 
 
-        if ($level == 1){
+        if ($level == 1){ // AMOUNT
 
             echo "CON Enter amount:";
 
-        } else if ($level == 2) {
-
-            echo "CON Enter your PIN:";
-
-        } else if ($level == 3) {
+        } else if ($level == 2) { // PIN
 
             $customer = Customer::where('phone_number', $this->phoneNumber)->first();
 
-            $response .= "Buy " . number_format($textArray[1]) . " on Meter - " . $customer->meter_number . "\n";
-            $response .= "1. Confirm\n";
+            $response .= "Buy " . number_format($textArray[1]) . " on Meter: " . $customer->meter_number . "\n";
+            $response .= "Enter your PIN to confirm:\n";
             $response .= "2. Cancel\n";
             $response .= env('GO_BACK') . " Back\n";
             $response .= env('GO_TO_MAIN_MENU') .  " Main menu\n";
+
             echo "CON " . $response;
 
-        } else if ($level == 4 && $textArray[3] == 1) {
+        // } else if ($level == 3) {
+
+        //     $customer = Customer::where('phone_number', $this->phoneNumber)->first();
+
+        //     $response .= "Buy " . number_format($textArray[1]) . " on Meter - " . $customer->meter_number . "\n";
+        //     $response .= "1. Confirm\n";
+        //     $response .= "2. Cancel\n";
+        //     $response .= env('GO_BACK') . " Back\n";
+        //     $response .= env('GO_TO_MAIN_MENU') .  " Main menu\n";
+        //     echo "CON " . $response;
+
+        } else if ($level == 3 && $textArray[2] != 2) {
 
             //check if PIN correct
             $amount = $textArray[1];
@@ -128,16 +136,16 @@ class Menu{
                 echo "END We are processing your request. You will receive an SMS shortly";
             }
 
-        } else if ($level == 5 && $textArray[3] == 2) {
+        } else if ($level == 3 && $textArray[2] == 2) {
 
             //Cancel
             echo "END Canceled. Thank you for using our service";
 
-        } else if ($level == 5 && $textArray[3] == env('GO_BACK')) {
+        } else if ($level == 3 && $textArray[2] == env('GO_BACK')) {
 
             echo "END You have requested to back to one step - re-enter PIN";
 
-        } else if ($level == 5 && $textArray[3] == env('GO_TO_MAIN_MENU')) {
+        } else if ($level == 4 && $textArray[2] == env('GO_TO_MAIN_MENU')) {
 
             echo "END You have requested to back to main menu - to start all over again";
 
@@ -248,10 +256,6 @@ class Menu{
         }
     }
 
-    public function checkBalanceMenu($textArray){
-        echo "CON To be implemented";
-    }
-
     public function addCountryCodeToPhoneNumber($phone){
         return env('COUNTRY_CODE') . substr($phone, 1);
     }
@@ -264,24 +268,33 @@ class Menu{
     public function goBack($text){
         //1*4*5*1*98*2*1234
         $explodedText = explode("*",$text);
-        while(array_search(env('GO_BACK'), $explodedText) != false){
+
+        while(array_search(env('GO_BACK'), $explodedText) != false) {
+
             $firstIndex = array_search(env('GO_BACK'), $explodedText);
             array_splice($explodedText, $firstIndex-1, 2);
+
         }
+
         return join("*", $explodedText);
     }
 
     public function goToMainMenu($text){
         //1*4*5*1*99*2*1234*99
         $explodedText = explode("*",$text);
-        while(array_search(env('GO_TO_MAIN_MENU'), $explodedText) != false){
+
+        while(array_search(env('GO_TO_MAIN_MENU'), $explodedText) != false) {
+
             $firstIndex = array_search(env('GO_TO_MAIN_MENU'), $explodedText);
             $explodedText = array_slice($explodedText, $firstIndex + 1);
+
         }
+
         return join("*",$explodedText);
     }
 
     private function eligibleAmount(Customer $customer) {
+        // get this via coffers ENDPOINT
         return 2000;
     }
 

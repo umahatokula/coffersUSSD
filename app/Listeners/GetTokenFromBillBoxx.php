@@ -8,7 +8,7 @@ use Illuminate\Queue\InteractsWithQueue;
 
 use GuzzleHttp\Client;
 
-class GetTokenFromBillBoxx implements ShouldQueue
+class GetTokenFromBillBoxx
 {
     /**
      * Create the event listener.
@@ -34,21 +34,22 @@ class GetTokenFromBillBoxx implements ShouldQueue
 
             $client = new Client();
             $response = $client->post('http://198.71.50.252/gateway/', [
-                'disco' => 'Pay Electricity aedc',
-                'meter_number' => '30530035598',
-                'payment_type' => 'prepaid',
-                'msisdn' => '08034910941',
-                'amount' => '200',
-                'action' => 'electricity_verify',
+                "disco" =>  "Pay Electricity aedc",
+                "meter_number" =>  "30530035598",
+                "payment_type"=> "prepaid",
+                "msisdn"=> "08034910941",
+                "amount"=> "200",
+                "action" => "electricity_verify"
             ]);
 
-            if ($response->getStatus() == 200) {
+            if ($response->getStatusCode() == 200) {
 
+                print_r($response->getBody()->getContents());
                 echo $response->getBody();
 
             } else {
 
-                echo 'Unexpected HTTP status: ' . $response->getStatus() . ' ' .
+                echo 'Unexpected HTTP status: ' . $response->getStatusCode() . ' ' .
                 $response->getReasonPhrase();
 
             }
