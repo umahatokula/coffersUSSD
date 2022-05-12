@@ -269,7 +269,7 @@ class Menu{
         //1*4*5*1*98*2*1234
         $explodedText = explode("*",$text);
 
-        while(array_search(env('GO_BACK'), $explodedText) != false) {
+        while(array_search(env('GO_BACK'), $explodedText)) {
 
             $firstIndex = array_search(env('GO_BACK'), $explodedText);
             array_splice($explodedText, $firstIndex-1, 2);
@@ -283,7 +283,7 @@ class Menu{
         //1*4*5*1*99*2*1234*99
         $explodedText = explode("*",$text);
 
-        while(array_search(env('GO_TO_MAIN_MENU'), $explodedText) != false) {
+        while(array_search(env('GO_TO_MAIN_MENU'), $explodedText)) {
 
             $firstIndex = array_search(env('GO_TO_MAIN_MENU'), $explodedText);
             $explodedText = array_slice($explodedText, $firstIndex + 1);

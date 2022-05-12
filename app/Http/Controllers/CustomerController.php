@@ -29,7 +29,7 @@ class CustomerController extends Controller
 
         if ($text == "" && $isUserRegistered) {
 
-            //user is registered and string is is empty
+            //user is registered and string is empty
             echo "CON " . $menu->mainMenuRegistered("");
 
         } else if ($text == "" && $isUserRegistered == false) {
@@ -45,7 +45,7 @@ class CustomerController extends Controller
             switch($textArray[0]){
                 case 1:
                     $menu->registerMenu($textArray, $phoneNumber);
-                break;
+                    break;
                 default:
                     echo "END Invalid choice. Please try again";
             }
